@@ -53,6 +53,7 @@ cd AgenticAI
     OPENSEARCH_INDEX=pdf_chunks
 3. **Install dependencies:**
     pip install -r requirements.txt
+    
 ## Running the Pipeline
 python app.py
 (Modify pdf_path and user_query inside the script or call run_pipeline() with your own parameters.)
