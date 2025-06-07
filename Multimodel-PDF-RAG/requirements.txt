@@ -1,0 +1,22 @@
+# Core PDF and OCR tools
+PyMuPDF
+PyPDF2
+pdf2image
+pytesseract
+Pillow
+
+# Vector storage
+pymilvus
+opensearch-py>=2.4.0
+
+# LangChain Ecosystem
+langchain
+langchain-core
+langchain-openai
+langchain-community
+
+# LLM + Utility
+openai
+python-docx
+python-dotenv
+tqdm
