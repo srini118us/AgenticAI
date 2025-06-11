@@ -1,0 +1,31 @@
+// Stateful Agent System Workflow
+digraph {
+	rankdir=TB size="10,10"
+	start [label=_start_ fillcolor="#D0C8F5" shape=oval style=filled]
+	supervisor [label=Supervisor fillcolor="#D0C8F5" shape=box style=filled]
+	llm_call [label="LLM Call" fillcolor="#E0E0E0" shape=box style=filled]
+	rag_call [label="RAG Call" fillcolor="#E0E0E0" shape=box style=filled]
+	web_call [label="Web Call" fillcolor="#E0E0E0" shape=box style=filled]
+	llm [label=LLM fillcolor="#D0C8F5" shape=box style=filled]
+	rag [label=RAG fillcolor="#D0C8F5" shape=box style=filled]
+	web [label=Web fillcolor="#D0C8F5" shape=box style=filled]
+	validation [label=Validation fillcolor="#D0C8F5" shape=box style=filled]
+	revoked [label=revoked fillcolor="#E0E0E0" shape=box style=filled]
+	accepted [label=accepted fillcolor="#E0E0E0" shape=box style=filled]
+	end_node [label=End fillcolor="#D0C8F5" shape=box style=filled]
+	end [label=_end_ fillcolor="#D0C8F5" shape=oval style=filled]
+	start -> supervisor
+	supervisor -> llm_call [style=dotted]
+	supervisor -> rag_call [style=dotted]
+	supervisor -> web_call [style=dotted]
+	llm_call -> llm [style=dotted]
+	rag_call -> rag [style=dotted]
+	web_call -> web [style=dotted]
+	llm -> validation
+	rag -> validation
+	web -> validation
+	validation -> supervisor [label=revoked style=dotted]
+	validation -> accepted [style=dotted]
+	accepted -> end_node
+	end_node -> end
+}
