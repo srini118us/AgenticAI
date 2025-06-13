@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()
+import os
 from openai import OpenAI
 
 def get_llm_response(query: str, model: str = "gpt-3.5-turbo") -> str:
