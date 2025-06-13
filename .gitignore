@@ -36,6 +36,9 @@ vector_store/
 attention_vector_store/
 *.faiss
 *.pkl
+.env
+.env.*
+stateful-agents/
 
 # Logs
 *.log
