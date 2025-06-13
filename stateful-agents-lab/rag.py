@@ -25,7 +25,7 @@ class PDFRAG:
         model_name: str = "sentence-transformers/all-MiniLM-L6-v2",
         chunk_size: int = 1000,
         chunk_overlap: int = 200,
-        persist_directory: str = "vector_store"
+        persist_directory: str = "attention_vector_store"
     ):
         """Initialize the RAG system with embedding model and vector store.
         
@@ -60,10 +60,12 @@ class PDFRAG:
             pdf_path: Path to the PDF file
         """
         try:
-            logger.info(f"Loading PDF: {pdf_path}")
+            # Construct absolute path
+            absolute_pdf_path = os.path.abspath(pdf_path)
+            logger.info(f"Loading PDF: {absolute_pdf_path}")
             
             # Load PDF
-            loader = PyPDFLoader(pdf_path)
+            loader = PyPDFLoader(absolute_pdf_path)
             pages = loader.load()
             logger.info(f"Loaded {len(pages)} pages from PDF.")
             
@@ -78,7 +80,7 @@ class PDFRAG:
                 processed_doc = Document(
                     page_content=cleaned_text,
                     metadata={
-                        "source": pdf_path,
+                        "source": absolute_pdf_path,
                         "page": page.metadata.get("page", 0),
                         "processed_date": datetime.now().isoformat()
                     }
@@ -101,7 +103,7 @@ class PDFRAG:
             
             # Save vector store
             self.save_vector_store()
-            logger.info(f"Successfully processed and stored {len(chunks)} chunks from {pdf_path}")
+            logger.info(f"Successfully processed and stored {len(chunks)} chunks from {absolute_pdf_path}")
                 
         except Exception as e:
             logger.error(f"Error processing PDF: {str(e)}")
@@ -124,7 +126,9 @@ class PDFRAG:
             pdf_files = loader.load()
             
             for pdf_file in pdf_files:
-                self.load_pdf(pdf_file.metadata["source"])
+                # Construct absolute path for each PDF in the directory
+                absolute_pdf_file_path = os.path.abspath(pdf_file.metadata["source"])
+                self.load_pdf(absolute_pdf_file_path)
                 
         except Exception as e:
             logger.error(f"Error loading directory: {str(e)}")
@@ -247,24 +251,21 @@ def get_rag_response(
         rag = PDFRAG()
         
         if pdf_path:
-            rag.load_pdf(pdf_path)
-            return rag.get_response(query)
+            # Construct absolute path for consistency
+            rag.load_pdf(os.path.abspath(pdf_path))
         elif directory_path:
-            rag.load_directory(directory_path)
-            return rag.get_response(query)
+            rag.load_directory(os.path.abspath(directory_path))
         elif documents:
-            # Fallback to simple string matching for backward compatibility
-            relevant_docs = [doc for doc in documents if query.lower() in doc.lower()]
-            context = "\\n".join(relevant_docs)
-            if not context:
-                return "No relevant context found for the query."
-            prompt = f"Context: {context}\\n\\nQuestion: {query}"
-            return get_llm_response(prompt)
+            # For simple document list, no PDF loading is needed, just direct processing if any
+            # This branch might need more logic if documents are expected to be processed into vector store
+            return "Direct document processing not yet fully implemented for RAG convenience function."
         else:
-            return "Please provide either a PDF path, directory path, or a list of documents."
+            return "No documents, PDF path, or directory path provided for RAG."
+
+        return rag.get_response(query)
     except Exception as e:
-        logger.error(f"Error in RAG operation: {str(e)}")
-        return f"Error: {str(e)}"\
+        logger.error(f"Error in get_rag_response: {str(e)}")
+        return f"Error in RAG convenience function: {str(e)}"
 
 if __name__ == "__main__":
     # Example usage

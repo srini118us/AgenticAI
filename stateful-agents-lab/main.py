@@ -1,6 +1,6 @@
 from llm import get_llm_response
 from rag import get_rag_response, PDFRAG
-from web_scraper import scrape_website
+from web_scraper import search_web
 from validator import validate_output
 import os
 
@@ -41,14 +41,13 @@ def simple_agent_workflow(task_type: str, query: str = None, urls: list = None, 
         print(f"RAG Result Valid: {is_valid}")
 
     elif task_type == "web_scrape":
-        if not urls:
-            return "Error: URLs are required for Web Scraper task."
-        print(f"Calling Web Scraper for URL: {urls[0]}")
-        # For simplicity, just scraping the first URL
-        result = scrape_website(urls[0])
-        print(f"Web Scraper Raw Result: {result[:100]}...")
+        if not query:
+            return "Error: Query is required for Web Scraper task."
+        print(f"Calling Web Searcher for query: {query}")
+        result = search_web(query)
+        print(f"Web Searcher Raw Result: {result[:100]}...")
         is_valid = validate_output(result, "not_empty")
-        print(f"Web Scraper Result Valid: {is_valid}")
+        print(f"Web Searcher Result Valid: {is_valid}")
 
     else:
         return f"Error: Unknown task type '{task_type}'"
@@ -66,9 +65,8 @@ if __name__ == "__main__":
     print(simple_agent_workflow(task_type="llm_query", query="Explain quantum computing in simple terms."))
 
     # Example 2: RAG Query (using PDF)
-    pdf_path_rag_example = "stateful-agents-lab/attention.pdf"
+    pdf_path_rag_example = "attention.pdf"
     print(simple_agent_workflow(task_type="rag_query", query="What are the key concepts of attention mechanisms?", pdf_path=pdf_path_rag_example))
 
-    # Example 3: Web Scrape
-    # Be mindful of robots.txt and website terms of service when using a real URL.
-    print(simple_agent_workflow(task_type="web_scrape", urls=["http://example.com"]))
+    # Example 3: Web Search
+    print(simple_agent_workflow(task_type="web_scrape", query="What is latest updates in AI?"))
