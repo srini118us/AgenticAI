@@ -120,24 +120,7 @@ python travel_workflow_graph.py
 
 ## 🔄 Workflow Diagram
 
-```mermaid
-graph TD
-    A[User Query] --> B[Weather Agent]
-    B --> C[Attractions Agent]
-    C --> D{Hotel Agent}
-    D -->|Success| E[Currency Agent]
-    D -->|Failed| F[Online Hotel Agent]
-    F --> E
-    E --> G[Itinerary Agent]
-    G --> H[Expense Agent]
-    H --> I[Summary Agent]
-    I --> J[Final Trip Plan]
-    
-    style A fill:#e1f5fe
-    style J fill:#c8e6c9
-    style D fill:#fff3e0
-    style F fill:#ffebee
-```
+
 
 ### 🔄 Detailed Workflow Flow
 
