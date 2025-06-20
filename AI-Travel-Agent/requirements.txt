@@ -1,0 +1,52 @@
+# Core LangChain and LangGraph
+langchain
+langchain-core
+langchain-openai
+langchain-community
+langgraph
+
+# LLM Providers
+openai
+anthropic
+
+# Data handling and validation
+pydantic
+pydantic-settings
+pandas
+
+# API integrations
+requests
+httpx
+
+# Environment and configuration
+python-dotenv
+
+# Development and testing
+pytest
+black
+flake8
+
+# Visualization (for workflow graphs)
+matplotlib
+networkx
+graphviz
+
+# Weather API
+python-weather==0.1.0
+
+# Currency conversion
+forex-python==1.8
+
+# Hotel and travel APIs
+amadeus==8.1.0
+
+# Wikipedia API
+wikipedia
+
+# Jupyter
+notebook
+jupyterlab
+
+google-search-results
+googlemaps
+langchain-google-community
