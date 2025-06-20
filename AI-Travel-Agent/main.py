@@ -162,15 +162,31 @@ class ItineraryService:
 class SummaryService:
     def generate_summary(self, all_data):
         """
-        Generate a summary of the trip.
+        Generate a detailed summary of the trip, including all key details.
         """
-        summary = "Trip Summary:\n"
-        if isinstance(all_data, dict):
-            for key, value in all_data.items():
-                summary += f"{key}: {value}\n"
-        else:
-            summary += str(all_data)
-        return summary
+        summary_lines = []
+        summary_lines.append(f"Trip Summary for {all_data.get('city', 'Unknown')} ({all_data.get('days', '?')} days)")
+        summary_lines.append("-" * 40)
+        if 'weather' in all_data:
+            summary_lines.append(f"Weather Forecast: {all_data['weather']}")
+        if 'attractions' in all_data:
+            summary_lines.append(f"Top Attractions: {all_data['attractions']}")
+        if 'hotels' in all_data:
+            summary_lines.append(f"Hotel Suggestions: {all_data['hotels']}")
+        if 'itinerary' in all_data:
+            summary_lines.append("Itinerary:")
+            for i, day in enumerate(all_data['itinerary'], 1):
+                summary_lines.append(f"  Day {i}: {day}")
+        if 'total_cost' in all_data:
+            summary_lines.append(f"Estimated Total Cost: {all_data['total_cost']}")
+        if 'daily_budget' in all_data:
+            summary_lines.append(f"Estimated Daily Budget: {all_data['daily_budget']}")
+        # Fallback info (if present)
+        if all_data.get('attractions_fallback_used'):
+            summary_lines.append("Attractions fallback used: Yes")
+        if all_data.get('hotels_fallback_used'):
+            summary_lines.append("Hotels fallback used: Yes")
+        return "\n".join(summary_lines)
 
 
 class TravelAgent:
@@ -205,14 +221,16 @@ class TravelAgent:
             self.itinerary.create_day_plan(city, attractions, weather)
             for _ in range(days)
         ])
-        # 8. Generate summary
+        # 8. Generate summary (include all info)
         summary = self.summary.generate_summary({
             "city": city,
             "days": days,
-            "budget": budget,
+            "weather": weather,
+            "attractions": attractions,
+            "hotels": hotels,
+            "itinerary": itinerary,
             "total_cost": total_cost,
-            "daily_budget": daily_budget,
-            "itinerary": itinerary
+            "daily_budget": daily_budget
         })
         return summary
 
