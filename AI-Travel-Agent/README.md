@@ -149,4 +149,33 @@ My budget is 800 EUR. Please provide:
 | Tips for Getting Around| Not shown             | Not shown             |
 | Fallback Used          | No                    | No                    |
 
---- 
+---
+
+## 🏁 Main Entry Point: `main.py`
+
+The `main.py` script is the main entry point for this project. It can be run as a Streamlit web application, providing a modern chat interface in your browser for AI-powered travel planning.
+
+- **Streamlit Web App:**  
+  Launch with:
+  ```bash
+  streamlit run main.py
+  ```
+  - Enter your travel requests in the chat interface
+  - Try example prompts for quick testing
+  - Get concise, structured trip summaries powered by a flexible ReAct agent
+
+**Sample Output (Web UI):**
+```
+🌍 TRIP TO PARIS (3 days)
+Day 1:
+  Weather: Not available
+  Attractions: Eiffel Tower, Louvre Museum
+  Restaurant: Le Gourmet
+
+💰 TOTAL ESTIMATED COST: $2000
+```
+*The app enforces concise output, showing only the most relevant details for each day.*
+
+![Streamlit UI Screenshot](docs/streamlit_ui_example.png)
+
+*Example: The Streamlit web app features clickable example prompts, a chat interface for entering travel requests, and displays detailed trip summaries in response to user queries.* 
