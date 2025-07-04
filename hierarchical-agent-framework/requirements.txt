@@ -1,0 +1,13 @@
+langgraph>=0.5.1
+langchain
+langchain-openai
+langchain-community
+langchain-core
+python-dotenv
+ipykernel
+python-docx
+reportlab
+PyPDF2
+pandas
+typing-extensions
+python-dateutil
