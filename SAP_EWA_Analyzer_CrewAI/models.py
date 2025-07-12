@@ -1,0 +1,1 @@
+# Data types and models for SAP EWA Analyzer 
