@@ -13,6 +13,7 @@ from langchain_openai import ChatOpenAI
 
 from config import config
 from tools import PDFProcessorTool, VectorSearchTool, HealthAnalysisTool
+# EmailNotificationTool temporarily removed due to import issues
 from models import (
     CrewExecutionResult, AgentCommunication, AgentStatus,
     SystemHealthAnalysis, AnalysisRequest
@@ -31,9 +32,9 @@ class SAPEWAAgents:
         """Initialize the language model for agents"""
         return ChatOpenAI(
             openai_api_key=config.OPENAI_API_KEY,
-            model_name="gpt-4",
-            temperature=0.1,
-            max_tokens=2000
+            model_name=config.LLM_MODEL,  # Now reads from .env
+            temperature=config.LLM_TEMPERATURE,
+            max_tokens=config.LLM_MAX_TOKENS
         )
     
     def _initialize_tools(self) -> Dict[str, Any]:
@@ -42,6 +43,7 @@ class SAPEWAAgents:
             "pdf_processor": PDFProcessorTool(),
             "vector_search": VectorSearchTool(),
             "health_analyzer": HealthAnalysisTool()
+            # Temporarily removed email tool: "email_notifier": EmailNotificationTool()
         }
     
     def create_document_processor_agent(self) -> Agent:
@@ -60,7 +62,7 @@ class SAPEWAAgents:
             - Handling various PDF formats and quality levels
             - Detecting SAP-specific patterns and conventions""",
             verbose=config.CREW_VERBOSE,
-            allow_delegation=True,
+            allow_delegation=False,
             llm=self.llm,
             tools=[self.tools["pdf_processor"]],
             max_iter=config.MAX_ITERATIONS
@@ -82,7 +84,7 @@ class SAPEWAAgents:
             - Performing semantic similarity searches with filters
             - Optimizing search parameters for SAP-specific queries""",
             verbose=config.CREW_VERBOSE,
-            allow_delegation=True,
+            allow_delegation=False,
             llm=self.llm,
             tools=[self.tools["vector_search"]],
             max_iter=config.MAX_ITERATIONS
@@ -105,7 +107,7 @@ class SAPEWAAgents:
             - SAP Note recommendations and best practices
             - Risk assessment and mitigation strategies""",
             verbose=config.CREW_VERBOSE,
-            allow_delegation=True,
+            allow_delegation=False,
             llm=self.llm,
             tools=[self.tools["health_analyzer"]],
             max_iter=config.MAX_ITERATIONS
@@ -128,7 +130,7 @@ class SAPEWAAgents:
             - Quality assurance and validation of results
             - Stakeholder communication and reporting""",
             verbose=config.CREW_VERBOSE,
-            allow_delegation=True,
+            allow_delegation=False,
             llm=self.llm,
             tools=[],  # Coordinator delegates to other agents
             max_iter=config.MAX_ITERATIONS
@@ -263,7 +265,8 @@ class SAPEWATasks:
         )
 
 def create_sap_ewa_crew(pdf_files: List[str], 
-                       search_queries: Optional[List[str]] = None) -> Crew:
+                       search_queries: Optional[List[str]] = None,
+                       email_recipients: Optional[List[str]] = None) -> Crew:
     """Create and configure the complete SAP EWA analysis crew"""
     
     if not search_queries:
@@ -278,7 +281,7 @@ def create_sap_ewa_crew(pdf_files: List[str],
     # Initialize agent factory
     agent_factory = SAPEWAAgents()
     
-    # Create agents
+    # Create agents (without email agent for now)
     document_processor = agent_factory.create_document_processor_agent()
     vector_manager = agent_factory.create_vector_manager_agent()
     health_analyst = agent_factory.create_health_analyst_agent()
@@ -290,10 +293,20 @@ def create_sap_ewa_crew(pdf_files: List[str],
     health_task = SAPEWATasks.create_health_analysis_task(health_analyst, search_queries)
     report_task = SAPEWATasks.create_report_compilation_task(report_coordinator)
     
+    agents_list = [document_processor, vector_manager, health_analyst, report_coordinator]
+    tasks_list = [doc_task, vector_task, health_task, report_task]
+    
+    # Email functionality temporarily disabled
+    # if config.EMAIL_ENABLED and email_recipients:
+    #     email_agent = agent_factory.create_email_notification_agent()
+    #     email_task = SAPEWATasks.create_email_notification_task(email_agent, email_recipients)
+    #     agents_list.append(email_agent)
+    #     tasks_list.append(email_task)
+    
     # Create and configure crew
     crew = Crew(
-        agents=[document_processor, vector_manager, health_analyst, report_coordinator],
-        tasks=[doc_task, vector_task, health_task, report_task],
+        agents=agents_list,
+        tasks=tasks_list,
         process=Process.sequential,
         verbose=config.CREW_VERBOSE,
         memory=config.CREW_MEMORY_ENABLED,
@@ -410,4 +423,4 @@ def analyze_sap_ewa_documents(pdf_files: List[str],
         detailed_health=True
     )
     
-    return execute_sap_ewa_analysis(request)# All 4 CrewAI agents for SAP EWA Analyzer 
+    return execute_sap_ewa_analysis(request)
